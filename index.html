@@ -79,10 +79,35 @@
         .red-syl { color: var(--mein-rot) !important; }
 
         /* Fragen-Bereich */
-        .q-section { margin-top: 40px; color: #333; }
-        .q-item { margin-bottom: 30px; page-break-inside: avoid; }
-        .q-title { font-weight: bold; font-size: 20px; margin-bottom: 10px; }
-        .q-line { border-bottom: 1px solid #666; height: 35px; }
+.q-section {
+    margin-top: 50px;
+    color: #333;
+}
+
+.q-item {
+    margin-bottom: 35px;
+    page-break-inside: avoid;
+}
+
+/* Frage selbst */
+.q-title {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 12px;
+
+    background: #eef4ff;
+    padding: 8px 12px;
+
+    border-left: 5px solid var(--mein-blau);
+    border-radius: 4px;
+}
+
+/* Antwortlinien */
+.q-line {
+    border-bottom: 1px solid #666;
+    height: 35px;
+    margin-left: 8px;
+}
 
         @media print {
             body { background: white; padding: 0; }
