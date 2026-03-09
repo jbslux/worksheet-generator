@@ -1,225 +1,248 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>Worksheet Generator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worksheet Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Comic Neue", cursive;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
 
-<style>
+        h1 {
+            text-align: center;
+            color: #2E86C1;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
 
-body{
-font-family:"Comic Neue", cursive;
-background:#f4f4f4;
-margin:0;
-padding:30px;
-}
+        .input-area {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
 
-.container{
-max-width:900px;
-margin:auto;
-}
+        textarea {
+            width: 100%;
+            height: 180px;
+            padding: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            resize: vertical;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
 
-h1{
-text-align:center;
-color:#2E86C1;
-margin-bottom:20px;
-}
+        textarea:focus {
+            border-color: #2E86C1;
+        }
 
-textarea{
-width:100%;
-height:200px;
-padding:15px;
-font-family:monospace;
-font-size:14px;
-margin-bottom:20px;
-border-radius:6px;
-border:1px solid #ccc;
-}
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
 
-button{
-padding:10px 18px;
-font-size:16px;
-background:#2E86C1;
-color:white;
-border:none;
-border-radius:6px;
-cursor:pointer;
-margin-right:10px;
-}
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #2E86C1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.3s;
+        }
 
-button:hover{
-background:#1f6fa3;
-}
+        button:hover {
+            background: #2471A3;
+        }
 
-.worksheet{
-background:white;
-padding:50px;
-margin-top:30px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
-}
+        button:active {
+            transform: scale(0.98);
+        }
 
-.title{
-text-align:center;
-font-size:42px;
-color:#2E86C1;
-margin-bottom:20px;
-}
+        .print-btn {
+            background: #27AE60;
+        }
 
-.header{
-display:flex;
-justify-content:space-between;
-margin-bottom:30px;
-font-size:18px;
-}
+        .print-btn:hover {
+            background: #1e8449;
+        }
 
-.story{
-margin-bottom:30px;
-line-height:1.6;
-font-size:18px;
-}
+        /* Arbeitsblatt Styling */
+        .worksheet {
+            background: white;
+            padding: 60px;
+            min-height: 297mm; /* A4 Proportion */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            margin-top: 20px;
+            position: relative;
+        }
 
-.question{
-margin-top:18px;
-font-size:18px;
-}
+        .title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #2E86C1;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            border-bottom: 3px double #2E86C1;
+            padding-bottom: 10px;
+        }
 
-.line{
-border-bottom:1px solid #444;
-height:22px;
-margin-bottom:6px;
-}
+        .header-fields {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            font-weight: bold;
+        }
 
-img{
-width:100%;
-max-height:280px;
-object-fit:cover;
-margin-bottom:20px;
-border-radius:6px;
-}
+        .header-fields span {
+            border-bottom: 1px solid #000;
+            min-width: 200px;
+            display: inline-block;
+        }
 
-.controls{
-margin-bottom:20px;
-}
+        .story-box {
+            font-size: 19px;
+            line-height: 1.7;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 5px solid #2E86C1;
+            font-style: italic;
+        }
 
-@media print{
+        .question-item {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
 
-textarea,.controls,h1{
-display:none;
-}
+        .question-text {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
 
-body{
-background:white;
-padding:0;
-}
+        .writing-lines {
+            margin-top: 10px;
+        }
 
-.worksheet{
-box-shadow:none;
-padding:20px;
-}
+        .line {
+            border-bottom: 1px solid #888;
+            height: 30px;
+            margin-bottom: 5px;
+        }
 
-}
-
-</style>
+        /* Print Einstellungen */
+        @media print {
+            body { background: white; padding: 0; }
+            .input-area, h1 { display: none; }
+            .worksheet { 
+                box-shadow: none; 
+                margin: 0; 
+                padding: 10mm; 
+                width: 100%;
+            }
+            .story-box { background: transparent; }
+        }
+    </style>
 </head>
-
 <body>
 
 <div class="container">
+    <h1>📝 Arbeitsblatt-Generator</h1>
 
-<h1>Worksheet Generator</h1>
+    <div class="input-area">
+        <textarea id="inputText" placeholder="Titel der Geschichte...
+        
+Text der Geschichte hier einfügen...
 
-<textarea id="inputText" placeholder="Beispiel:
+Frage 1?
+Frage 2?"></textarea>
+        
+        <div class="controls">
+            <button onclick="generateWorksheet()">Arbeitsblatt erstellen</button>
+            <button class="print-btn" onclick="window.print()">Als PDF speichern / Drucken</button>
+        </div>
+    </div>
 
-Une découverte sur le vieux grenier
-
-Léa aide sa grand-mère à ranger un vieux grenier rempli d’objets anciens.
-
-De quoi parle le texte ?
-Où se déroule l’histoire ?
-Qui sont les personnages principaux ?
-Quel objet Léa découvre-t-elle ?
-Pourquoi ce cartable est-il important ?"></textarea>
-
-<div class="controls">
-<button onclick="generateWorksheet()">Arbeitsblatt erstellen</button>
-<button onclick="window.print()">Als PDF drucken</button>
-</div>
-
-<div id="output"></div>
-
+    <div id="output"></div>
 </div>
 
 <script>
+function generateWorksheet() {
+    const raw = document.getElementById("inputText").value.trim();
+    if (!raw) {
+        alert("Bitte gib einen Text ein!");
+        return;
+    }
 
-function generateWorksheet(){
+    const lines = raw.split("\n").map(l => l.trim()).filter(l => l !== "");
+    
+    let title = lines[0] || "Arbeitsblatt";
+    let storyLines = [];
+    let questions = [];
 
-const raw=document.getElementById("inputText").value.trim();
+    // Logik: Erste Zeile ist Titel, Zeilen mit '?' sind Fragen, Rest ist Story
+    for (let i = 1; i < lines.length; i++) {
+        if (lines[i].includes("?")) {
+            questions.push(lines[i]);
+        } else {
+            storyLines.push(lines[i]);
+        }
+    }
 
-if(raw===""){
-alert("Bitte Text eingeben");
-return;
+    let html = `
+        <div class="worksheet">
+            <div class="title">${title}</div>
+            
+            <div class="header-fields">
+                <div>Nom: <span></span></div>
+                <div>Date: <span></span></div>
+            </div>
+
+            <div class="story-box">
+                ${storyLines.join("<br><br>")}
+            </div>
+    `;
+
+    questions.forEach((q, index) => {
+        html += `
+            <div class="question-item">
+                <div class="question-text">${index + 1}. ${q}</div>
+                <div class="writing-lines">
+                    <div class="line"></div>
+                    <div class="line"></div>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    document.getElementById("output").innerHTML = html;
+    
+    // Automatisch zum Ergebnis scrollen
+    document.getElementById("output").scrollIntoView({ behavior: 'smooth' });
 }
-
-const lines=raw.split("\n");
-
-let title="";
-let story="";
-let questions=[];
-
-lines.forEach(line=>{
-
-line=line.trim();
-
-if(line==="") return;
-
-if(line.includes("?")){
-questions.push(line);
-}
-else if(title===""){
-title=line;
-}
-else{
-story+=line+" ";
-}
-
-});
-
-if(title==="") title="Arbeitsblatt";
-
-let html=`<div class="worksheet">`;
-
-html+=`<div class="title">${title}</div>`;
-
-html+=`<img src="https://picsum.photos/1200/300?random=${Math.random()}">`;
-
-html+=`
-<div class="header">
-<div>Nom: __________________________</div>
-<div>Date: __________________________</div>
-</div>
-`;
-
-if(story!==""){
-html+=`<div class="story">${story}</div>`;
-}
-
-questions.forEach((q,i)=>{
-
-html+=`<div class="question">${i+1}. ${q}</div>`;
-
-for(let j=0;j<3;j++){
-html+=`<div class="line"></div>`;
-}
-
-});
-
-html+=`</div>`;
-
-document.getElementById("output").innerHTML=html;
-
-}
-
 </script>
 
 </body>
