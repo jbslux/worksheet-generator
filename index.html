@@ -5,7 +5,6 @@
     <title>Perfekter Silben-Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Festgelegte Farben für das gesamte Dokument */
         :root {
             --mein-blau: #0040ff;
             --mein-rot: #ff0000;
@@ -19,7 +18,6 @@
 
         .container { max-width: 800px; margin: auto; }
 
-        /* Eingabebereich (wird nicht gedruckt) */
         .input-box {
             background: white; 
             padding: 20px; 
@@ -47,11 +45,10 @@
         .btn-gen { background: var(--mein-blau); color: white; }
         .btn-print { background: #27AE60; color: white; margin-left: 10px; }
 
-        /* ARBEITSBLATT DESIGN */
         .worksheet {
             background: white; padding: 60px; min-height: 297mm;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            color: #333; /* Standardfarbe */
+            color: #333;
         }
 
         .ws-header {
@@ -74,15 +71,20 @@
             text-align: justify;
         }
 
-        /* Silben-Modus: Alles wird blau, rote Silben werden drübergelegt */
         .is-syllable-mode { color: var(--mein-blau) !important; }
         .red-syl { color: var(--mein-rot) !important; }
 
-        /* Fragen-Bereich */
-.q-section { margin-top: 40px; color: #333; }
-.q-item { margin-bottom: 30px; page-break-inside: avoid; }
-.q-title { font-weight: bold; font-size: 20px; margin-bottom: 10px; }
-.q-line { border-bottom: 1px solid #666; height: 35px; }
+        .q-section { margin-top: 40px; color: #333; }
+        .q-headline { 
+            font-size: 24px; 
+            font-weight: bold; 
+            border-bottom: 2px solid #333; 
+            margin-bottom: 20px; 
+            padding-bottom: 5px;
+        }
+        .q-item { margin-bottom: 30px; page-break-inside: avoid; }
+        .q-title { font-weight: bold; font-size: 20px; margin-bottom: 10px; }
+        .q-line { border-bottom: 1px solid #666; height: 35px; }
 
         @media print {
             body { background: white; padding: 0; }
@@ -98,12 +100,11 @@
     <h1>Arbeitsblatt Creator</h1>
 
     <div class="input-box">
-        <textarea id="mainInput" placeholder="Titel (Sterne werden gelöscht)
+        <textarea id="mainInput" placeholder="Titel...
 
-Text mit Sil·ben·punk·ten...
+Text...
 
-1. Erste Frage?
-2. Zweite Frage?"></textarea>
+1. Frage..."></textarea>
 
         <div class="upload-zone">
             <label>Bild auswählen: </label>
@@ -128,25 +129,16 @@ document.getElementById('fileIn').onchange = function(e) {
 
 function formatText(text, isSyllable) {
     if (!isSyllable) return text;
-
-    // Text in Stücke teilen (Wörter und Leerzeichen/Satzzeichen)
     return text.split(/(\s+)/).map(part => {
         if (part.trim() === "") return part;
-
-        // Wort von Satzzeichen trennen
         const match = part.match(/^([a-zA-ZäöüÄÖÜß·]+)([^a-zA-ZäöüÄÖÜß·]*)$/);
         if (!match) return part;
-
         const word = match[1];
         const punc = match[2];
-
-        // Wort in Silben zerlegen (am Mittelpunkt)
         const syls = word.split('·');
         const coloredWord = syls.map((s, i) => {
-            // Jede 2. Silbe wird rot, der Rest bleibt blau (durch den Container)
             return i % 2 !== 0 ? `<span class="red-syl">${s}</span>` : s;
         }).join('');
-
         return coloredWord + punc;
     }).join('');
 }
@@ -158,17 +150,19 @@ function makeWS() {
     const lines = raw.split('\n').map(l => l.trim()).filter(l => l !== "");
     const hasSyllables = raw.includes('·');
 
-    // 1. Titel (Bereinigen & Formatieren)
+    // Spracherkennung (simpel)
+    const frWords = ['le', 'la', 'les', 'et', 'dans', 'est', 'une', 'qui'];
+    const isFrench = frWords.some(w => raw.toLowerCase().includes(' ' + w + ' '));
+    const qHeadline = isFrench ? "Questions" : "Fragen";
+
     const titleClean = lines[0].replace(/\*/g, '');
     const titleHTML = formatText(titleClean, hasSyllables);
 
-    // 2. Trennung (Fragen fangen mit Zahl+Punkt an)
     const qReg = /^\d+\.\s/;
     const questions = lines.filter(l => qReg.test(l));
     const storyLines = lines.slice(1).filter(l => !qReg.test(l));
     const storyHTML = formatText(storyLines.join('\n\n'), hasSyllables);
 
-    // HTML zusammenbauen
     let html = `
         <div class="worksheet">
             <div class="ws-header">
@@ -185,6 +179,7 @@ function makeWS() {
             <div class="ws-content ${hasSyllables ? 'is-syllable-mode' : ''}">${storyHTML}</div>
 
             <div class="q-section">
+                <div class="q-headline">${qHeadline}</div>
     `;
 
     questions.forEach(q => {
