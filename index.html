@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Arbeitsblatt Generator - Silben Edition</title>
+    <title>Silben-Arbeitsblatt Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: "Comic Neue", cursive; background: #f4f7f6; padding: 20px; color: #333; }
@@ -71,7 +71,7 @@
         <textarea id="inputText" placeholder="Titel (z.B. *Mein Osterfest*)
 
 Hier den Text einfügen. Nutze Punkte für Silben: Os·ter·ha·se.
-Wörter ohne Punkte bleiben schwarz.
+Sobald ein Punkt im Text ist, werden auch einsilbige Wörter blau!
 
 1. Wo wohnt der Osterhase?
 2. Warum sind die Eier bunt?"></textarea>
@@ -100,22 +100,28 @@ document.getElementById('imageUpload').addEventListener('change', function(e) {
     }
 });
 
-/**
- * Kernfunktion: Prüft jedes Wort. 
- * Wenn '·' enthalten ist: Punkt weg + Farbe.
- * Wenn kein '·' enthalten ist: Unverändert lassen.
- */
-function processText(text) {
+function processText(text, isSyllableMode) {
+    if (!isSyllableMode) return text;
+
     // Teilt Text in Wörter/Zeichen auf, um Leerzeichen und Zeilenumbrüche zu erhalten
     return text.split(/(\s+)/).map(part => {
-        if (!part.includes('·')) return part;
+        // Ignoriere reine Leerzeichen/Umbrüche
+        if (part.trim() === "") return part;
+        
+        // Entferne Satzzeichen am Ende des Wortes für die Farblogik, füge sie danach wieder an
+        const match = part.match(/^([\w·]+)([^\w·]*)$/);
+        if (!match) return part;
 
-        // Silben am Punkt trennen
-        const syllables = part.split('·');
-        return syllables.map((syl, i) => {
+        const word = match[1];
+        const punctuation = match[2];
+
+        const syllables = word.split('·');
+        const coloredWord = syllables.map((syl, i) => {
             const colorClass = (i % 2 === 0) ? 'syl-blue' : 'syl-red';
             return `<span class="${colorClass}">${syl}</span>`;
         }).join('');
+
+        return coloredWord + punctuation;
     }).join('');
 }
 
@@ -123,21 +129,22 @@ function generate() {
     const fullText = document.getElementById("inputText").value.trim();
     if(!fullText) return;
 
+    // Prüfen, ob der GESAMTE Text mindestens einen Silbenpunkt enthält
+    const isSyllableMode = fullText.includes('·');
+
     // In Zeilen splitten
     const lines = fullText.split('\n').map(l => l.trim()).filter(l => l !== "");
     
-    // 1. Titel (Asterixe entfernen und Silben-Check)
+    // 1. Titel (Asterixe entfernen)
     let titleRaw = lines[0].replace(/\*/g, '');
-    const title = processText(titleRaw);
+    const title = processText(titleRaw, isSyllableMode);
 
     // 2. Fragen und Story trennen
-    // Eine Zeile ist eine Frage, wenn sie mit einer Ziffer beginnt, gefolgt von einem Punkt
     const questionRegex = /^\d+\.\s/;
     const questions = lines.filter(line => questionRegex.test(line));
-    
-    // Die Story ist alles außer dem Titel (index 0) und den Fragen
     const storyLines = lines.slice(1).filter(line => !questionRegex.test(line));
-    const processedStory = processText(storyLines.join('\n\n'));
+    
+    const processedStory = processText(storyLines.join('\n\n'), isSyllableMode);
 
     let html = `
         <div class="worksheet">
@@ -155,7 +162,7 @@ function generate() {
             <div class="ws-content">${processedStory}</div>
     `;
 
-    // 3. Fragen mit Schreiblinien generieren
+    // 3. Fragen
     questions.forEach((q) => {
         html += `
             <div class="q-block">
