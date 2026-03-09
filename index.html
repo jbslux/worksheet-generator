@@ -2,71 +2,92 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Silben-Arbeitsblatt Generator</title>
+    <title>Perfekter Silben-Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Einheitliche Farb-Variablen */
+        /* Festgelegte Farben für das gesamte Dokument */
         :root {
-            --syl-blue: #0040ff;
-            --syl-red: #ff0000;
-            --title-blue: #2E86C1;
+            --mein-blau: #0040ff;
+            --mein-rot: #ff0000;
         }
 
-        body { font-family: "Comic Neue", cursive; background: #f4f7f6; padding: 20px; color: #333; }
-        .container { max-width: 850px; margin: auto; }
-        
-        .controls-box { 
-            background: white; padding: 25px; border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; 
+        body { 
+            font-family: "Comic Neue", cursive; 
+            background: #f0f2f5; 
+            padding: 20px; 
         }
-        textarea { 
-            width: 100%; height: 250px; padding: 12px; border: 2px solid #ddd; 
-            border-radius: 8px; font-size: 14px; box-sizing: border-box; margin-bottom: 15px;
-        }
-        .upload-section {
-            background: #f9f9f9; padding: 10px; border-radius: 6px; margin-bottom: 15px;
-            border: 1px dashed #2E86C1;
-        }
-        
-        button { 
-            padding: 12px 20px; cursor: pointer; border-radius: 6px; border: none; 
-            font-weight: bold; transition: 0.3s; margin-right: 10px;
-        }
-        .btn-gen { background: #2E86C1; color: white; }
-        .btn-print { background: #27AE60; color: white; }
 
-        .worksheet { 
-            background: white; padding: 50px; min-height: 297mm; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        .container { max-width: 800px; margin: auto; }
+
+        /* Eingabebereich (wird nicht gedruckt) */
+        .input-box {
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            margin-bottom: 30px;
         }
-        
-        .ws-top-meta { 
-            display: flex; justify-content: space-between; 
-            margin-bottom: 30px; font-size: 18px; font-weight: bold; 
+
+        textarea {
+            width: 100%; height: 200px; padding: 12px;
+            border: 2px solid #ddd; border-radius: 8px;
+            font-size: 14px; box-sizing: border-box;
         }
-        .ws-top-meta span { border-bottom: 2px solid #333; min-width: 200px; display: inline-block; }
 
-        .ws-title { text-align: center; font-size: 34px; margin: 20px 0; font-weight: 700; color: #333; }
-        
-        .ws-image-container { display: flex; justify-content: center; margin-bottom: 30px; }
-        #previewImg { max-width: 85%; max-height: 300px; object-fit: contain; border-radius: 10px; }
+        .upload-zone {
+            margin: 15px 0; padding: 10px;
+            border: 1px dashed var(--mein-blau); border-radius: 6px;
+            background: #f9f9f9;
+        }
 
-        /* Der Standard-Text im Arbeitsblatt wird im Silbenmodus blau */
-        .ws-content { font-size: 20px; line-height: 1.8; margin-bottom: 40px; white-space: pre-wrap; text-align: justify; }
-        .syllable-mode { color: var(--syl-blue); }
+        button {
+            padding: 12px 25px; cursor: pointer; border-radius: 6px;
+            border: none; font-weight: bold; font-size: 16px;
+        }
+        .btn-gen { background: var(--mein-blau); color: white; }
+        .btn-print { background: #27AE60; color: white; margin-left: 10px; }
 
-        /* Silben-Farbklassen */
-        .syl-blue { color: var(--syl-blue); }
-        .syl-red { color: var(--syl-red); }
+        /* ARBEITSBLATT DESIGN */
+        .worksheet {
+            background: white; padding: 60px; min-height: 297mm;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            color: #333; /* Standardfarbe */
+        }
 
-        .q-block { margin-bottom: 25px; page-break-inside: avoid; color: #333; }
-        .q-text { font-weight: bold; font-size: 19px; margin-bottom: 8px; color: var(--title-blue); }
-        .q-line { border-bottom: 1px solid #555; height: 32px; }
+        .ws-header {
+            display: flex; justify-content: space-between;
+            margin-bottom: 40px; font-weight: bold; font-size: 18px;
+        }
+        .ws-header span { border-bottom: 2px solid #333; min-width: 200px; display: inline-block; }
+
+        .ws-title {
+            text-align: center; font-size: 36px; font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .ws-img-holder { display: flex; justify-content: center; margin-bottom: 30px; }
+        #ws-img { max-width: 90%; max-height: 350px; border-radius: 8px; }
+
+        .ws-content {
+            font-size: 21px; line-height: 1.8;
+            margin-bottom: 50px; white-space: pre-wrap;
+            text-align: justify;
+        }
+
+        /* Silben-Modus: Alles wird blau, rote Silben werden drübergelegt */
+        .is-syllable-mode { color: var(--mein-blau) !important; }
+        .red-syl { color: var(--mein-rot) !important; }
+
+        /* Fragen-Bereich */
+        .q-section { margin-top: 40px; color: #333; }
+        .q-item { margin-bottom: 30px; page-break-inside: avoid; }
+        .q-title { font-weight: bold; font-size: 20px; margin-bottom: 10px; }
+        .q-line { border-bottom: 1px solid #666; height: 35px; }
 
         @media print {
             body { background: white; padding: 0; }
-            .controls-box, h1 { display: none; }
-            .worksheet { padding: 0; box-shadow: none; width: 100%; }
+            .input-box, h1 { display: none; }
+            .worksheet { box-shadow: none; padding: 0; width: 100%; }
             @page { margin: 1.5cm; }
         }
     </style>
@@ -74,19 +95,22 @@
 <body>
 
 <div class="container">
-    <h1>📝 Silben-Arbeitsblatt Generator</h1>
-    
-    <div class="controls-box">
-        <textarea id="inputText" placeholder="Titel (z.B. *Die Ostereiersuche*)
+    <h1>Arbeitsblatt Creator</h1>
 
-Text mit Sil·ben..."></textarea>
-        
-        <div class="upload-section">
-            <label><strong>Bild hochladen:</strong> </label>
-            <input type="file" id="imageUpload" accept="image/*">
+    <div class="input-box">
+        <textarea id="mainInput" placeholder="Titel (Sterne werden gelöscht)
+
+Text mit Sil·ben·punk·ten...
+
+1. Erste Frage?
+2. Zweite Frage?"></textarea>
+
+        <div class="upload-zone">
+            <label>Bild auswählen: </label>
+            <input type="file" id="fileIn" accept="image/*">
         </div>
 
-        <button class="btn-gen" onclick="generate()">Arbeitsblatt erstellen</button>
+        <button class="btn-gen" onclick="makeWS()">Arbeitsblatt erstellen</button>
         <button class="btn-print" onclick="window.print()">Drucken / PDF</button>
     </div>
 
@@ -94,77 +118,79 @@ Text mit Sil·ben..."></textarea>
 </div>
 
 <script>
-let currentImageData = "";
+let imgData = "";
 
-document.getElementById('imageUpload').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) { currentImageData = event.target.result; };
-        reader.readAsDataURL(file);
-    }
-});
+document.getElementById('fileIn').onchange = function(e) {
+    const reader = new FileReader();
+    reader.onload = (ev) => imgData = ev.target.result;
+    reader.readAsDataURL(e.target.files[0]);
+};
 
-function processText(text, isSyllableMode) {
-    if (!isSyllableMode) return text;
+function formatText(text, isSyllable) {
+    if (!isSyllable) return text;
 
+    // Text in Stücke teilen (Wörter und Leerzeichen/Satzzeichen)
     return text.split(/(\s+)/).map(part => {
         if (part.trim() === "") return part;
-        
-        // Trenne Wort von Satzzeichen
+
+        // Wort von Satzzeichen trennen
         const match = part.match(/^([a-zA-ZäöüÄÖÜß·]+)([^a-zA-ZäöüÄÖÜß·]*)$/);
         if (!match) return part;
 
         const word = match[1];
-        const punctuation = match[2];
+        const punc = match[2];
 
-        const syllables = word.split('·');
-        const coloredWord = syllables.map((syl, i) => {
-            const colorClass = (i % 2 === 0) ? 'syl-blue' : 'syl-red';
-            return `<span class="${colorClass}">${syl}</span>`;
+        // Wort in Silben zerlegen (am Mittelpunkt)
+        const syls = word.split('·');
+        const coloredWord = syls.map((s, i) => {
+            // Jede 2. Silbe wird rot, der Rest bleibt blau (durch den Container)
+            return i % 2 !== 0 ? `<span class="red-syl">${s}</span>` : s;
         }).join('');
 
-        // Satzzeichen bleiben blau (via Container-Klasse), aber ohne Span-Färbung
-        return coloredWord + punctuation;
+        return coloredWord + punc;
     }).join('');
 }
 
-function generate() {
-    const fullText = document.getElementById("inputText").value.trim();
-    if(!fullText) return;
+function makeWS() {
+    const raw = document.getElementById('mainInput').value.trim();
+    if (!raw) return;
 
-    const isSyllableMode = fullText.includes('·');
-    const lines = fullText.split('\n').map(l => l.trim()).filter(l => l !== "");
-    
-    let titleRaw = lines[0].replace(/\*/g, '');
-    const title = processText(titleRaw, isSyllableMode);
+    const lines = raw.split('\n').map(l => l.trim()).filter(l => l !== "");
+    const hasSyllables = raw.includes('·');
 
-    const questionRegex = /^\d+\.\s/;
-    const questions = lines.filter(line => questionRegex.test(line));
-    const storyLines = lines.slice(1).filter(line => !questionRegex.test(line));
-    
-    const processedStory = processText(storyLines.join('\n\n'), isSyllableMode);
+    // 1. Titel (Bereinigen & Formatieren)
+    const titleClean = lines[0].replace(/\*/g, '');
+    const titleHTML = formatText(titleClean, hasSyllables);
 
+    // 2. Trennung (Fragen fangen mit Zahl+Punkt an)
+    const qReg = /^\d+\.\s/;
+    const questions = lines.filter(l => qReg.test(l));
+    const storyLines = lines.slice(1).filter(l => !qReg.test(l));
+    const storyHTML = formatText(storyLines.join('\n\n'), hasSyllables);
+
+    // HTML zusammenbauen
     let html = `
         <div class="worksheet">
-            <div class="ws-top-meta">
+            <div class="ws-header">
                 <div>Nom: <span></span></div>
                 <div>Date: <span></span></div>
             </div>
 
-            <div class="ws-title ${isSyllableMode ? 'syllable-mode' : ''}">${title}</div>
+            <div class="ws-title ${hasSyllables ? 'is-syllable-mode' : ''}">${titleHTML}</div>
 
-            <div class="ws-image-container">
-                ${currentImageData ? `<img src="${currentImageData}" id="previewImg">` : ''}
+            <div class="ws-img-holder">
+                ${imgData ? `<img src="${imgData}" id="ws-img">` : ''}
             </div>
 
-            <div class="ws-content ${isSyllableMode ? 'syllable-mode' : ''}">${processedStory}</div>
+            <div class="ws-content ${hasSyllables ? 'is-syllable-mode' : ''}">${storyHTML}</div>
+
+            <div class="q-section">
     `;
 
-    questions.forEach((q) => {
+    questions.forEach(q => {
         html += `
-            <div class="q-block">
-                <div class="q-text">${q}</div>
+            <div class="q-item">
+                <div class="q-title">${q}</div>
                 <div class="q-line"></div>
                 <div class="q-line"></div>
                 <div class="q-line"></div>
@@ -172,7 +198,7 @@ function generate() {
         `;
     });
 
-    html += `</div>`;
+    html += `</div></div>`;
     document.getElementById('output').innerHTML = html;
 }
 </script>
