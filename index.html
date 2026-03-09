@@ -44,8 +44,22 @@
 
         .ws-title { text-align: center; font-size: 38px; color: #2E86C1; margin: 20px 0; font-weight: 700; }
         
-        .ws-image-container { text-align: center; margin-bottom: 30px; }
-        #previewImg { width: 100%; max-height: 350px; object-fit: cover; border-radius: 10px; display: none; }
+        /* Bild-Zentrierung */
+        .ws-image-container { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            margin-bottom: 30px; 
+            width: 100%;
+        }
+        
+        #previewImg { 
+            max-width: 80%; /* Bild nimmt max. 80% der Breite ein */
+            max-height: 350px; 
+            object-fit: contain; /* Verhindert Verzerrung */
+            border-radius: 10px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
 
         .ws-content { font-size: 19px; line-height: 1.7; margin-bottom: 40px; white-space: pre-wrap; }
 
@@ -57,7 +71,7 @@
             body { background: white; padding: 0; }
             .controls-box, h1 { display: none; }
             .worksheet { padding: 0; box-shadow: none; width: 100%; }
-            @page { margin: 1cm; }
+            @page { margin: 1.5cm; } /* Etwas mehr Rand für den Drucker */
         }
     </style>
 </head>
@@ -69,13 +83,13 @@
     <div class="controls-box">
         <textarea id="inputText" placeholder="Titel der Geschichte...
         
-Text der Geschichte...
+Inhalt der Geschichte hier einfügen...
 
 Frage 1?
 Frage 2?"></textarea>
         
         <div class="upload-section">
-            <label><strong>Eigenes Bild einfügen:</strong> </label>
+            <label><strong>Bild hochladen:</strong> </label>
             <input type="file" id="imageUpload" accept="image/*">
         </div>
 
@@ -83,14 +97,13 @@ Frage 2?"></textarea>
         <button class="btn-print" onclick="window.print()">Drucken / PDF</button>
     </div>
 
-    <div id="output">
-        </div>
+    <div id="output"></div>
 </div>
 
 <script>
 let currentImageData = "";
 
-// Bild-Datei verarbeiten, wenn sie ausgewählt wird
+// Bild-Datei verarbeiten
 document.getElementById('imageUpload').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
@@ -108,7 +121,11 @@ function generate() {
 
     const lines = text.split('\n').filter(l => l.trim() !== "");
     const title = lines[0];
+    
+    // Fragen sind alle Zeilen mit Fragezeichen
     const questions = lines.filter(l => l.includes('?'));
+    
+    // Story ist alles außer der ersten Zeile und den Fragen
     const storyLines = lines.slice(1).filter(l => !l.includes('?'));
 
     let html = `
@@ -121,12 +138,13 @@ function generate() {
             <div class="ws-title">${title}</div>
 
             <div class="ws-image-container">
-                ${currentImageData ? `<img src="${currentImageData}" id="previewImg" style="display:block;" alt="Themenbild">` : ''}
+                ${currentImageData ? `<img src="${currentImageData}" id="previewImg" alt="Themenbild">` : ''}
             </div>
 
             <div class="ws-content">${storyLines.join('\n\n')}</div>
     `;
 
+    // 5. Fragen
     questions.forEach((q, i) => {
         html += `
             <div class="q-block">
