@@ -2,94 +2,100 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Perfekter Silben-Generator</title>
+    <title>Profi Silben-Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --mein-blau: #0040ff;
             --mein-rot: #ff0000;
+            --akzent-bg: #e8f0ff;
         }
 
         body { 
             font-family: "Comic Neue", cursive; 
             background: #f0f2f5; 
             padding: 20px; 
+            margin: 0;
         }
 
-        .container { max-width: 800px; margin: auto; }
+        .container { max-width: 850px; margin: auto; }
 
+        /* Eingabebereich */
         .input-box {
-            background: white; 
-            padding: 20px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-            margin-bottom: 30px;
+            background: white; padding: 25px; border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px;
         }
 
         textarea {
-            width: 100%; height: 200px; padding: 12px;
+            width: 100%; height: 220px; padding: 15px;
             border: 2px solid #ddd; border-radius: 8px;
-            font-size: 14px; box-sizing: border-box;
+            font-size: 15px; font-family: sans-serif; box-sizing: border-box;
         }
 
         .upload-zone {
-            margin: 15px 0; padding: 10px;
-            border: 1px dashed var(--mein-blau); border-radius: 6px;
-            background: #f9f9f9;
+            margin: 15px 0; padding: 15px;
+            border: 2px dashed var(--mein-blau); border-radius: 8px;
+            background: #f9fbff; text-align: center;
         }
 
         button {
-            padding: 12px 25px; cursor: pointer; border-radius: 6px;
-            border: none; font-weight: bold; font-size: 16px;
+            padding: 14px 30px; cursor: pointer; border-radius: 8px;
+            border: none; font-weight: bold; font-size: 16px; transition: 0.2s;
         }
         .btn-gen { background: var(--mein-blau); color: white; }
+        .btn-gen:hover { background: #0033cc; }
         .btn-print { background: #27AE60; color: white; margin-left: 10px; }
+        .btn-print:hover { background: #1e8449; }
 
+        /* ARBEITSBLATT DESIGN */
         .worksheet {
-            background: white; padding: 60px; min-height: 297mm;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            color: #333;
+            background: white; padding: 60px 70px; min-height: 297mm;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            color: #222; position: relative;
         }
 
         .ws-header {
             display: flex; justify-content: space-between;
-            margin-bottom: 40px; font-weight: bold; font-size: 18px;
+            margin-bottom: 50px; font-weight: bold; font-size: 18px;
+            color: #555;
         }
-        .ws-header span { border-bottom: 2px solid #333; min-width: 200px; display: inline-block; }
+        .ws-header span { border-bottom: 2px solid #ccc; min-width: 220px; display: inline-block; padding-top: 5px; }
 
         .ws-title {
-            text-align: center; font-size: 36px; font-weight: bold;
-            margin-bottom: 30px;
+            text-align: center; font-size: 40px; font-weight: 700;
+            margin-bottom: 40px; line-height: 1.2;
         }
 
-        .ws-img-holder { display: flex; justify-content: center; margin-bottom: 30px; }
-        #ws-img { max-width: 90%; max-height: 350px; border-radius: 8px; }
+        .ws-img-holder { display: flex; justify-content: center; margin-bottom: 40px; }
+        #ws-img { max-width: 85%; max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 
         .ws-content {
-            font-size: 21px; line-height: 1.8;
-            margin-bottom: 50px; white-space: pre-wrap;
+            font-size: 22px; line-height: 1.85;
+            margin-bottom: 60px; white-space: pre-wrap;
             text-align: justify;
         }
 
         .is-syllable-mode { color: var(--mein-blau) !important; }
         .red-syl { color: var(--mein-rot) !important; }
 
-        .q-section { margin-top: 40px; color: #333; }
+        /* Fragen-Bereich modernisiert */
+        .q-section { margin-top: 60px; }
         .q-headline { 
-            font-size: 24px; 
-            font-weight: bold; 
-            border-bottom: 2px solid #333; 
-            margin-bottom: 20px; 
-            padding-bottom: 5px;
+            font-size: 26px; font-weight: bold; 
+            background: var(--akzent-bg); 
+            color: var(--mein-blau);
+            padding: 10px 20px; border-radius: 8px;
+            margin-bottom: 35px; display: inline-block;
         }
-        .q-item { margin-bottom: 30px; page-break-inside: avoid; }
-        .q-title { font-weight: bold; font-size: 20px; margin-bottom: 10px; }
-        .q-line { border-bottom: 1px solid #666; height: 35px; }
+        .q-item { margin-bottom: 40px; page-break-inside: avoid; }
+        .q-title { font-weight: bold; font-size: 21px; margin-bottom: 15px; color: #333; }
+        .q-line { border-bottom: 1px solid #ddd; height: 38px; margin-left: 5px; }
 
         @media print {
             body { background: white; padding: 0; }
             .input-box, h1 { display: none; }
             .worksheet { box-shadow: none; padding: 0; width: 100%; }
+            .q-headline { background: transparent !important; border: 2px solid var(--akzent-bg); }
             @page { margin: 1.5cm; }
         }
     </style>
@@ -97,22 +103,24 @@
 <body>
 
 <div class="container">
-    <h1>Arbeitsblatt Creator</h1>
+    <h1 style="text-align: center; color: #333;">📝 Arbeitsblatt Creator Profi</h1>
 
     <div class="input-box">
-        <textarea id="mainInput" placeholder="Titel...
+        <textarea id="mainInput" placeholder="1. Zeile: Titel (Sterne werden gelöscht)
+        
+2. Teil: Dein Text (Nutze Punkte für Sil·ben)
 
-Text...
-
-1. Frage..."></textarea>
+3. Teil: Deine Fragen (Immer mit Zahl beginnen: 1. ...)"></textarea>
 
         <div class="upload-zone">
-            <label>Bild auswählen: </label>
-            <input type="file" id="fileIn" accept="image/*">
+            <label style="cursor: pointer;"><strong>📸 Bild für das Blatt auswählen</strong></label>
+            <input type="file" id="fileIn" accept="image/*" style="margin-top: 10px; display: block; width: 100%;">
         </div>
 
-        <button class="btn-gen" onclick="makeWS()">Arbeitsblatt erstellen</button>
-        <button class="btn-print" onclick="window.print()">Drucken / PDF</button>
+        <div style="display: flex; justify-content: center;">
+            <button class="btn-gen" onclick="makeWS()">Arbeitsblatt erstellen</button>
+            <button class="btn-print" onclick="window.print()">Drucken / PDF</button>
+        </div>
     </div>
 
     <div id="output"></div>
@@ -145,19 +153,21 @@ function formatText(text, isSyllable) {
 
 function makeWS() {
     const raw = document.getElementById('mainInput').value.trim();
-    if (!raw) return;
+    if (!raw) { alert("Bitte Text eingeben!"); return; }
 
     const lines = raw.split('\n').map(l => l.trim()).filter(l => l !== "");
     const hasSyllables = raw.includes('·');
 
-    // Spracherkennung (simpel)
-    const frWords = ['le', 'la', 'les', 'et', 'dans', 'est', 'une', 'qui'];
-    const isFrench = frWords.some(w => raw.toLowerCase().includes(' ' + w + ' '));
+    // Spracherkennung für Überschrift
+    const frWords = [' le ', ' la ', ' les ', ' et ', ' dans ', ' est ', ' une ', ' qui ', ' que '];
+    const isFrench = frWords.some(w => ' ' + raw.toLowerCase() + ' '.includes(w));
     const qHeadline = isFrench ? "Questions" : "Fragen";
 
+    // Titel
     const titleClean = lines[0].replace(/\*/g, '');
     const titleHTML = formatText(titleClean, hasSyllables);
 
+    // Trennung Fragen/Story
     const qReg = /^\d+\.\s/;
     const questions = lines.filter(l => qReg.test(l));
     const storyLines = lines.slice(1).filter(l => !qReg.test(l));
