@@ -5,6 +5,13 @@
     <title>Silben-Arbeitsblatt Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* Einheitliche Farb-Variablen */
+        :root {
+            --syl-blue: #0040ff;
+            --syl-red: #ff0000;
+            --title-blue: #2E86C1;
+        }
+
         body { font-family: "Comic Neue", cursive; background: #f4f7f6; padding: 20px; color: #333; }
         .container { max-width: 850px; margin: auto; }
         
@@ -39,19 +46,21 @@
         }
         .ws-top-meta span { border-bottom: 2px solid #333; min-width: 200px; display: inline-block; }
 
-        .ws-title { text-align: center; font-size: 34px; color: #2E86C1; margin: 20px 0; font-weight: 700; }
+        .ws-title { text-align: center; font-size: 34px; margin: 20px 0; font-weight: 700; color: #333; }
         
         .ws-image-container { display: flex; justify-content: center; margin-bottom: 30px; }
         #previewImg { max-width: 85%; max-height: 300px; object-fit: contain; border-radius: 10px; }
 
+        /* Der Standard-Text im Arbeitsblatt wird im Silbenmodus blau */
         .ws-content { font-size: 20px; line-height: 1.8; margin-bottom: 40px; white-space: pre-wrap; text-align: justify; }
+        .syllable-mode { color: var(--syl-blue); }
 
         /* Silben-Farbklassen */
-        .syl-blue { color: #0040ff; }
-        .syl-red { color: #ff0000; }
+        .syl-blue { color: var(--syl-blue); }
+        .syl-red { color: var(--syl-red); }
 
-        .q-block { margin-bottom: 25px; page-break-inside: avoid; }
-        .q-text { font-weight: bold; font-size: 19px; margin-bottom: 8px; color: #2E86C1; }
+        .q-block { margin-bottom: 25px; page-break-inside: avoid; color: #333; }
+        .q-text { font-weight: bold; font-size: 19px; margin-bottom: 8px; color: var(--title-blue); }
         .q-line { border-bottom: 1px solid #555; height: 32px; }
 
         @media print {
@@ -68,16 +77,12 @@
     <h1>📝 Silben-Arbeitsblatt Generator</h1>
     
     <div class="controls-box">
-        <textarea id="inputText" placeholder="Titel (z.B. *Mein Osterfest*)
+        <textarea id="inputText" placeholder="Titel (z.B. *Die Ostereiersuche*)
 
-Hier den Text einfügen. Nutze Punkte für Silben: Os·ter·ha·se.
-Sobald ein Punkt im Text ist, werden auch einsilbige Wörter blau!
-
-1. Wo wohnt der Osterhase?
-2. Warum sind die Eier bunt?"></textarea>
+Text mit Sil·ben..."></textarea>
         
         <div class="upload-section">
-            <label><strong>Bild für das Arbeitsblatt:</strong> </label>
+            <label><strong>Bild hochladen:</strong> </label>
             <input type="file" id="imageUpload" accept="image/*">
         </div>
 
@@ -103,13 +108,11 @@ document.getElementById('imageUpload').addEventListener('change', function(e) {
 function processText(text, isSyllableMode) {
     if (!isSyllableMode) return text;
 
-    // Teilt Text in Wörter/Zeichen auf, um Leerzeichen und Zeilenumbrüche zu erhalten
     return text.split(/(\s+)/).map(part => {
-        // Ignoriere reine Leerzeichen/Umbrüche
         if (part.trim() === "") return part;
         
-        // Entferne Satzzeichen am Ende des Wortes für die Farblogik, füge sie danach wieder an
-        const match = part.match(/^([\w·]+)([^\w·]*)$/);
+        // Trenne Wort von Satzzeichen
+        const match = part.match(/^([a-zA-ZäöüÄÖÜß·]+)([^a-zA-ZäöüÄÖÜß·]*)$/);
         if (!match) return part;
 
         const word = match[1];
@@ -121,6 +124,7 @@ function processText(text, isSyllableMode) {
             return `<span class="${colorClass}">${syl}</span>`;
         }).join('');
 
+        // Satzzeichen bleiben blau (via Container-Klasse), aber ohne Span-Färbung
         return coloredWord + punctuation;
     }).join('');
 }
@@ -129,17 +133,12 @@ function generate() {
     const fullText = document.getElementById("inputText").value.trim();
     if(!fullText) return;
 
-    // Prüfen, ob der GESAMTE Text mindestens einen Silbenpunkt enthält
     const isSyllableMode = fullText.includes('·');
-
-    // In Zeilen splitten
     const lines = fullText.split('\n').map(l => l.trim()).filter(l => l !== "");
     
-    // 1. Titel (Asterixe entfernen)
     let titleRaw = lines[0].replace(/\*/g, '');
     const title = processText(titleRaw, isSyllableMode);
 
-    // 2. Fragen und Story trennen
     const questionRegex = /^\d+\.\s/;
     const questions = lines.filter(line => questionRegex.test(line));
     const storyLines = lines.slice(1).filter(line => !questionRegex.test(line));
@@ -153,16 +152,15 @@ function generate() {
                 <div>Date: <span></span></div>
             </div>
 
-            <div class="ws-title">${title}</div>
+            <div class="ws-title ${isSyllableMode ? 'syllable-mode' : ''}">${title}</div>
 
             <div class="ws-image-container">
                 ${currentImageData ? `<img src="${currentImageData}" id="previewImg">` : ''}
             </div>
 
-            <div class="ws-content">${processedStory}</div>
+            <div class="ws-content ${isSyllableMode ? 'syllable-mode' : ''}">${processedStory}</div>
     `;
 
-    // 3. Fragen
     questions.forEach((q) => {
         html += `
             <div class="q-block">
