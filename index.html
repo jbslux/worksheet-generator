@@ -44,10 +44,14 @@
 
         .ws-title { text-align: center; font-size: 38px; color: #2E86C1; margin: 20px 0; font-weight: 700; }
         
-        .ws-image-container { text-align: center; margin-bottom: 30px; }
-        #previewImg { width: 100%; max-height: 350px; object-fit: cover; border-radius: 10px; display: none; }
+        .ws-image-container { display: flex; justify-content: center; margin-bottom: 30px; }
+        #previewImg { max-width: 80%; max-height: 350px; object-fit: contain; border-radius: 10px; display: block; }
 
-        .ws-content { font-size: 19px; line-height: 1.7; margin-bottom: 40px; white-space: pre-wrap; }
+        .ws-content { font-size: 20px; line-height: 1.8; margin-bottom: 40px; white-space: pre-wrap; }
+
+        /* Silbenfarben */
+        .syl-blue { color: #0040ff; }
+        .syl-red { color: #ff0000; }
 
         .q-block { margin-bottom: 25px; page-break-inside: avoid; }
         .q-text { font-weight: bold; font-size: 19px; margin-bottom: 8px; }
@@ -69,10 +73,9 @@
     <div class="controls-box">
         <textarea id="inputText" placeholder="Titel der Geschichte...
         
-Text der Geschichte...
+Text der Geschichte... Nutzen Sie '·' für Silben.
 
-Frage 1?
-Frage 2?"></textarea>
+Frage 1?"></textarea>
         
         <div class="upload-section">
             <label><strong>Eigenes Bild einfügen:</strong> </label>
@@ -83,33 +86,45 @@ Frage 2?"></textarea>
         <button class="btn-print" onclick="window.print()">Drucken / PDF</button>
     </div>
 
-    <div id="output">
-        </div>
+    <div id="output"></div>
 </div>
 
 <script>
 let currentImageData = "";
 
-// Bild-Datei verarbeiten, wenn sie ausgewählt wird
 document.getElementById('imageUpload').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(event) {
-            currentImageData = event.target.result;
-        };
+        reader.onload = function(event) { currentImageData = event.target.result; };
         reader.readAsDataURL(file);
     }
 });
+
+// Hilfsfunktion für Silbenfärbung
+function processSyllables(text) {
+    if (!text.includes('·')) return text;
+    return text.split(/(\s+)/).map(word => {
+        if (!word.includes('·')) return word;
+        return word.split('·').map((syl, i) => 
+            `<span class="${i % 2 === 0 ? 'syl-blue' : 'syl-red'}">${syl}</span>`
+        ).join('');
+    }).join('');
+}
 
 function generate() {
     const text = document.getElementById("inputText").value.trim();
     if(!text) { alert("Bitte Text eingeben!"); return; }
 
     const lines = text.split('\n').filter(l => l.trim() !== "");
-    const title = lines[0];
+    
+    // TITEL: Asterixe entfernen und Silben färben
+    let title = lines[0].replace(/\*/g, ''); 
+    title = processSyllables(title);
+
     const questions = lines.filter(l => l.includes('?'));
     const storyLines = lines.slice(1).filter(l => !l.includes('?'));
+    const coloredStory = processSyllables(storyLines.join('\n\n'));
 
     let html = `
         <div class="worksheet">
@@ -121,10 +136,10 @@ function generate() {
             <div class="ws-title">${title}</div>
 
             <div class="ws-image-container">
-                ${currentImageData ? `<img src="${currentImageData}" id="previewImg" style="display:block;" alt="Themenbild">` : ''}
+                ${currentImageData ? `<img src="${currentImageData}" id="previewImg" alt="Themenbild">` : ''}
             </div>
 
-            <div class="ws-content">${storyLines.join('\n\n')}</div>
+            <div class="ws-content">${coloredStory}</div>
     `;
 
     questions.forEach((q, i) => {
